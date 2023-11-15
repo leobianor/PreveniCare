@@ -1,0 +1,48 @@
+{
+  "pacientes": [
+    {
+      "nome": "Leonardo",
+      "sobrenome": "Bianor",
+      "idade": "21",
+      "cpf": "111.111.111-11",
+      "endereco": "Rua Alberto Lohnhoff",
+      "telefone": "(11) 96487-5470",
+      "email": "leobianor@outlook.com",
+      "doencasAnteriores": "asdsasdasd",
+      "alergias": "asddas",
+      "historicoMedico": "xaxassxas",
+      "contatoEmergencia": "xascascasc",
+      "isIdoso": true,
+      "id": 1
+    }
+  ],
+  "medicamentos": [
+    {
+      "nome": "",
+      "dosagem": "11 mg",
+      "horario": "11h",
+      "pacienteId": "1",
+      "id": 1
+    }
+  ],
+  "usuarios": [
+    {
+      "id": "1",
+      "nome": "Leonardo Bianor",
+      "email": "leobianor@outlook.com",
+      "senha": "1234"
+    },
+    {
+      "id": "2",
+      "nome": "Paula Machado",
+      "email": "paulamachado@outlook.com",
+      "senha": "4567"
+    },
+    {
+      "id": "3",
+      "nome": "Jorge Benjor",
+      "email": "1",
+      "senha": "1"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+import axios from "axios";
+import { createContext, useState } from "react";
+
+export const AuthContext = createContext({})
+
+export function AuthProvider({children}){
+    const [username, setUsername] = useState(null)
+
+    async function login(credenciais){
+        const resp = await axios.get("https://my-json-server.typicode.com/leobianor/api-PreveniCare/usuarios")
+        const usuarios = resp.data
+        const usuario = usuarios.find(u => u.email == credenciais.email)
+        if (usuario && usuario.senha == credenciais.senha){
+            setUsername(usuario.nome)
+            return true
+        }
+
+        return false
+    }
+    return(
+        <AuthContext.Provider value = {{username, login}}>
+            {children}
+        </AuthContext.Provider>
+    )
+}
