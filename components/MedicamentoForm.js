@@ -3,6 +3,7 @@ import { View, TextInput, Button, Text, TouchableOpacity, Alert } from 'react-na
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNPickerSelect from 'react-native-picker-select';
+import { v4 as uuidv4 } from 'uuid';
 import { styles } from '../style';
 
 const MedicamentoForm = ({ onSave, pacientes }) => {
@@ -35,6 +36,7 @@ const MedicamentoForm = ({ onSave, pacientes }) => {
             }
 
             const novoMedicamento = {
+                id: uuidv4(),
                 nome: nomeMedicamento,
                 dosagem,
                 horario: dataHorario.toISOString(),
@@ -52,21 +54,22 @@ const MedicamentoForm = ({ onSave, pacientes }) => {
             });
 
             await AsyncStorage.setItem('pacientes', JSON.stringify(updatedPacientes));
+            onSave(novoMedicamento);
+
+            const updatedMedicamentos = [...medicamentos, novoMedicamento];
+            await AsyncStorage.setItem('medicamentos', JSON.stringify(updatedMedicamentos));
 
             setNomeMedicamento('');
             setDosagem('');
             setDataHorario(new Date());
             setSelectedPaciente(null);
 
-            onSave(novoMedicamento);
-
-            // Exibir mensagem de sucesso
             Alert.alert('Sucesso', 'Medicamento cadastrado com sucesso!');
+            console.log('Medicamento cadastrado:', novoMedicamento);
         } catch (error) {
             console.error('Erro ao salvar o medicamento:', error.message);
         }
     };
-
     return (
         <View>
             <TextInput

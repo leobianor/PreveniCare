@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { View } from 'react-native';
-import MedicamentoForm from '../components/MedicamentoForm';
-import MedicamentoList from '../components/MedicamentoList';
+import { View, Alert } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { styles } from '../style';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import MedicamentoForm from '../components/MedicamentoForm';
+
 
 const CadastroMedicamentosScreen = ({ navigation }) => {
     const [medicamentos, setMedicamentos] = useState([]);
     const [pacientes, setPacientes] = useState([]);
 
-    const handleSaveMedicamento = (medicamento) => {
-        setMedicamentos([...medicamentos, medicamento]);
+    const handleSaveMedicamento = async (medicamento) => {
+        try {
+            const updatedMedicamentos = [...medicamentos, medicamento];
+            setMedicamentos(updatedMedicamentos);
+
+            await AsyncStorage.setItem('medicamentos', JSON.stringify(updatedMedicamentos));
+        } catch (error) {
+            console.error('Erro ao salvar os medicamentos:', error.message);
+        }
     };
 
     useEffect(() => {
@@ -33,7 +40,6 @@ const CadastroMedicamentosScreen = ({ navigation }) => {
         <View style={styles.containerPage}>
             <AntDesign name="arrowleft" size={24} color="#121A2C" onPress={() => navigation.navigate('Menu')}/>
             <MedicamentoForm onSave={handleSaveMedicamento} pacientes={pacientes} />
-            <MedicamentoList medicamentos={medicamentos} pacientes={pacientes} />
         </View>
     );
 };
