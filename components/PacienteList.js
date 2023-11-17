@@ -1,18 +1,19 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import { styles } from '../style';
 
 const PacienteList = ({ pacientes, onPress }) => {
     return (
-        <View>
-            <Text>Lista de Pacientes:</Text>
+        <View style={styles.containerPaciente}>
+            <Text style={styles.title}>Lista de Pacientes:</Text>
             <FlatList
                 data={pacientes}
-                keyExtractor={(item, index) => index.toString()}
+                keyExtractor={(item) => item.id.toString()} // Utiliza o id como chave única
                 renderItem={({ item }) => (
                     <TouchableOpacity onPress={() => onPress(item)}>
-                        <View>
-                            <Text>{item.nome}{item.sobrenome}</Text>
-                            <Text>{item.cpf}</Text>
+                        <View style={styles.pacienteItem}>
+                            <Text style={styles.nomePaciente}>{`${item.nome} ${item.sobrenome}`}</Text>
+                            <Text style={styles.nomePaciente}>{item.cpf}</Text>
                         </View>
                     </TouchableOpacity>
                 )}

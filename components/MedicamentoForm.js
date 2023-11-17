@@ -1,67 +1,67 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, Text, TouchableOpacity } from 'react-native';
-import DateTimePickerModal from "react-native-modal-datetime-picker";
-import axios from 'axios';
+import { View, TextInput, Button, Text, TouchableOpacity, Alert } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import RNPickerSelect from 'react-native-picker-select';
+import { styles } from '../style';
 
-const MedicamentoForm = ({ onSave }) => {
+const MedicamentoForm = ({ onSave, pacientes }) => {
     const [nomeMedicamento, setNomeMedicamento] = useState('');
     const [dosagem, setDosagem] = useState('');
     const [dataHorario, setDataHorario] = useState(new Date());
-    const [pacientes, setPacientes] = useState([]);
     const [selectedPaciente, setSelectedPaciente] = useState(null);
-    const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+    const [showDatePicker, setShowDatePicker] = useState(false);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get('http://localhost:3001/pacientes');
-                setPacientes(response.data);
-            } catch (error) {
-                console.error('Erro ao buscar os pacientes:', error.message);
-            }
-        };
-
-        fetchData();
-    }, []);
-
-    const showDatePicker = () => {
-        setDatePickerVisibility(true);
+    const showDatePickerComponent = () => {
+        setShowDatePicker(true);
     };
 
-    const hideDatePicker = () => {
-        setDatePickerVisibility(false);
+    const hideDatePickerComponent = () => {
+        setShowDatePicker(false);
     };
 
-    const handleDateConfirm = (date) => {
-        setDataHorario(date);
-        hideDatePicker();
+    const handleDateChange = (event, selectedDate) => {
+        hideDatePickerComponent();
+        if (selectedDate) {
+            setDataHorario(selectedDate);
+        }
     };
 
     const handleSave = async () => {
         try {
-            const response = await axios.post('http://localhost:3001/medicamentos', {
+            if (!selectedPaciente) {
+                Alert.alert('Erro', 'Por favor, selecione um paciente.');
+                return;
+            }
+
+            const novoMedicamento = {
                 nome: nomeMedicamento,
                 dosagem,
-                horario: dataHorario.toISOString(), // Converte a data para string ISO
+                horario: dataHorario.toISOString(),
                 pacienteId: selectedPaciente,
-            });
+            };
 
-            // Atualizar o array de medicamentos no paciente
             const updatedPacientes = pacientes.map((paciente) => {
                 if (paciente.id === selectedPaciente) {
                     return {
                         ...paciente,
-                        medicamentos: [...(paciente.medicamentos || []), response.data],
+                        medicamentos: [...(paciente.medicamentos || []), novoMedicamento],
                     };
                 }
                 return paciente;
             });
 
-            setPacientes(updatedPacientes);
+            await AsyncStorage.setItem('pacientes', JSON.stringify(updatedPacientes));
+
             setNomeMedicamento('');
             setDosagem('');
             setDataHorario(new Date());
             setSelectedPaciente(null);
+
+            onSave(novoMedicamento);
+
+            // Exibir mensagem de sucesso
+            Alert.alert('Sucesso', 'Medicamento cadastrado com sucesso!');
         } catch (error) {
             console.error('Erro ao salvar o medicamento:', error.message);
         }
@@ -76,21 +76,34 @@ const MedicamentoForm = ({ onSave }) => {
             />
             <TextInput placeholder="Dosagem" value={dosagem} onChangeText={setDosagem} />
 
-            <View>
-                <Text>Escolher Data/Horário:</Text>
-                <TouchableOpacity onPress={showDatePicker}>
-                    <Text>{dataHorario.toLocaleString()}</Text>
-                </TouchableOpacity>
+            <TouchableOpacity onPress={showDatePickerComponent}>
+                <Text>Escolher Data/Horário</Text>
+            </TouchableOpacity>
+
+            {showDatePicker && (
+                <DateTimePicker
+                    testID="dateTimePicker"
+                    value={dataHorario}
+                    mode="datetime"
+                    is24Hour={true}
+                    display="default"
+                    onChange={handleDateChange}
+                />
+            )}
+
+            <View style={{ marginBottom: 20 }}>
+                <Text>Selecionar Paciente:</Text>
+                <RNPickerSelect
+                    onValueChange={(value) => setSelectedPaciente(value)}
+                    items={(pacientes && pacientes.length > 0) ? (
+                        pacientes.map((paciente) => ({
+                            label: `${paciente.nome} - ${paciente.cpf}`,
+                            value: paciente.id,
+                        }))
+                    ) : [{ label: 'Nenhum paciente disponível', value: null }]}
+                />
             </View>
 
-            <DateTimePickerModal
-                isVisible={isDatePickerVisible}
-                mode="datetime"
-                onConfirm={handleDateConfirm}
-                onCancel={hideDatePicker}
-            />
-
-            {/* Dropdown para escolher o paciente */}
             <Button title="Salvar" onPress={handleSave} />
         </View>
     );

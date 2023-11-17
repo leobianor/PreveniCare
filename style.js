@@ -3,58 +3,95 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#121212',
+        backgroundColor: '##F5F5F5',
         alignItems: 'center',
         justifyContent: 'center',
     },
+    containerPage:{
+        flex: 1,
+        padding:20,
+        paddingTop:50,
+        backgroundColor: '#F5F5F5',
+        color: '#121212'
+
+    },
+    containerPaciente:{
+        padding:20,
+        paddingTop:20,
+        gap: 10
+    },
+    inputForm: {
+        fontSize: 20,
+        color: '#121212',
+    },
     containerBetween: {
         flex: 1,
-        backgroundColor: '#121212',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: 20,
+        paddingTop: 50,
+        paddingHorizontal:20
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#FFFFFF'
+        color: '#121212'
     },
-    text: {
-        color: '#FFFFFF'
+    textBlack: {
+        color: '#121212'
+    },
+    textWite: {
+        color: '#FFF',
+        textAlign: 'center'
+    },
+    nomePaciente: {
+        fontSize: 18,
+        color: '#121212',
+        textAlign: 'justify'
     },
     input: {
+        width:250,
         padding: 8,
         borderColor: 'gray',
         borderWidth: 1,
         marginTop: 20,
         borderRadius: 4,
-        color: '#FFFFFF',
+        color: '#121212',
         textAlign: 'center'
     },
     buttonMenu: {
         backgroundColor: '#121A2C',
-        color: '#FFFFFF',
-        padding: 20,
-        paddingHorizontal: 48,
+        color: '#121212',
+        paddingVertical: 20,
+        width: 300,
         borderRadius: 8,
         marginTop: 20,
+
     },
     button: {
         backgroundColor: '#121A2C',
         color: '#FFFFFF',
         padding: 8,
         paddingHorizontal: 48,
-        borderRadius: 4,
+        borderRadius: 40,
         marginTop: 20,
+    },
+    buttonForm: {
+        backgroundColor: '#121A2C',
+        borderRadius: 6,
+        padding: 8,
+        textAlign: 'center',
+        paddingHorizontal: 48,
+        marginTop: 20,
+        marginBottom: -20
     },
     buttonText: {
         color: '#FFFFFF',
+        textAlign: 'center',
     },
     header: {
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        margin: 20
     },
     imagem: {
         width: 200,
@@ -137,6 +174,7 @@ export const styles = StyleSheet.create({
         width: '100%',
     },
     erro: {
+        paddingTop:10,
         color: 'red'
     },
     modalContainer: {

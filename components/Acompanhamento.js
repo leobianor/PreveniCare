@@ -1,94 +1,46 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Button, Switch } from 'react-native';
-import axios from 'axios';
+// Acompanhamento.js
 
-const Acompanhamento = ({ medicamentos, onAdministrar }) => {
-    const [administeredMedications, setAdministeredMedications] = useState([]);
-    const [patients, setPatients] = useState([]);
-    const [showOnlyElderly, setShowOnlyElderly] = useState(false);
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { styles } from '../style';
+
+const Acompanhamento = () => {
+    const [medicamentos, setMedicamentos] = useState([]);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get('http://localhost:3001/pacientes');
-                setPatients(response.data);
-            } catch (error) {
-                console.error('Erro ao buscar os pacientes:', error.message);
-            }
-        };
-
-        fetchData();
+        carregarMedicamentos();
     }, []);
 
-    const handleAdministrar = async (medicamento) => {
+    const carregarMedicamentos = async () => {
         try {
-            // Atualiza o array de medicamentos administrados
-            setAdministeredMedications([...administeredMedications, medicamento]);
+            // Obter a lista de medicamentos do AsyncStorage
+            const medicamentosAtuais = await AsyncStorage.getItem('medicamentos');
+            const listaMedicamentos = medicamentosAtuais ? JSON.parse(medicamentosAtuais) : [];
 
-            // Chama a função de administração do medicamento
-            onAdministrar(medicamento);
+            // Filtrar para mostrar apenas medicamentos com pacientes idosos
+            const medicamentosFiltrados = listaMedicamentos.filter((med) => med.paciente.isIdoso);
 
-            // Atualiza o estado no backend (opcional, dependendo da lógica do seu sistema)
-            await axios.put(`http://localhost:3001/medicamentos/${medicamento.id}`, {
-                administrado: true,
-            });
+            setMedicamentos(medicamentosFiltrados);
         } catch (error) {
-            console.error('Erro ao administrar o medicamento:', error.message);
+            console.error('Erro ao carregar medicamentos:', error);
         }
     };
 
-    const filterPatients = () => {
-        if (showOnlyElderly) {
-            return patients.filter((patient) => patient.isIdoso);
-        }
-        return patients;
-    };
+    const renderItem = ({ item }) => (
+        <View style={styles.item}>
+            <Text style={styles.title}>{item.nome}</Text>
+            <Text>Paciente: {item.paciente.nome} {item.paciente.sobrenome}</Text>
+        </View>
+    );
 
     return (
-        <View>
-            <Text>Filtrar por Idosos:</Text>
-            <Switch
-                value={showOnlyElderly}
-                onValueChange={() => setShowOnlyElderly(!showOnlyElderly)}
-            />
-
-            <Text>Lista de Pacientes:</Text>
+        <View style={styles.containerPage}>
+            <Text style={styles.title}>Acompanhamento de Medicamentos</Text>
             <FlatList
-                data={filterPatients()}
+                data={medicamentos}
+                renderItem={renderItem}
                 keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
-                    <View>
-                        <Text>{item.nome} {item.sobrenome}</Text>
-                        <Text>ID: {item.id}</Text>
-                    </View>
-                )}
-            />
-
-            <Text>Administração de Medicamentos:</Text>
-            <FlatList
-                data={medicamentos.filter((med) => !med.administrado)}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
-                    <View>
-                        <Text>{item.nomeMedicamento}</Text>
-                        <Text>Dosagem: {item.dosagem}</Text>
-                        <Text>Horário: {item.horario}</Text>
-                        <Button title="Administrar" onPress={() => handleAdministrar(item)} />
-                    </View>
-                )}
-            />
-
-            <Text>Medicamentos Administrados:</Text>
-            <FlatList
-                data={administeredMedications}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
-                    <View>
-                        <Text>{item.nomeMedicamento}</Text>
-                        <Text>Dosagem: {item.dosagem}</Text>
-                        <Text>Horário: {item.horario}</Text>
-                    </View>
-                )}
             />
         </View>
     );

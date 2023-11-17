@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Switch, Text } from 'react-native';
-import axios from 'axios';
+import { View, TextInput, Switch, Text, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { v4 as uuidv4 } from 'uuid'; // Importar a função uuidv4
+import { styles } from '../style';
 
-const PacienteForm = () => {
+const PacienteForm = ({ onSave }) => {
+    const [id, setId] = useState('');
     const [nome, setNome] = useState('');
     const [sobrenome, setSobrenome] = useState('');
     const [idade, setIdade] = useState('');
@@ -17,46 +20,40 @@ const PacienteForm = () => {
     const [isIdoso, setIsIdoso] = useState(false);
 
     const formatarCPF = (inputCPF) => {
-        // Remove qualquer caractere que não seja número
         const cleaned = inputCPF.replace(/\D/g, '');
-
-        // Adiciona a formatação desejada (XXX.XXX.XXX-XX)
         const match = cleaned.match(/^(\d{3})(\d{3})(\d{3})(\d{2})$/);
         setCpf(match ? `${match[1]}.${match[2]}.${match[3]}-${match[4]}` : inputCPF);
     };
 
     const formatarTelefone = (inputTelefone) => {
-        // Remove qualquer caractere que não seja número
         const cleaned = inputTelefone.replace(/\D/g, '');
-
-        // Adiciona a formatação desejada (XX) XXXXX-XXXX
         const match = cleaned.match(/^(\d{2})(\d{5})(\d{4})$/);
         setTelefone(match ? `(${match[1]}) ${match[2]}-${match[3]}` : inputTelefone);
     };
 
     const handleSave = async () => {
-        // Validações usando expressões regulares
         const cpfRegex = /^\d{3}\.\d{3}\.\d{3}\-\d{2}$/;
         const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
         const telefoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
 
         if (!cpfRegex.test(cpf)) {
-            console.error('CPF inválido');
+            alert('CPF inválido');
             return;
         }
 
         if (!emailRegex.test(email)) {
-            console.error('E-mail inválido');
+            alert('E-mail inválido');
             return;
         }
 
         if (!telefoneRegex.test(telefone)) {
-            console.error('Telefone inválido');
+            alert('Telefone inválido');
             return;
         }
 
         try {
-            const response = await axios.post('https://my-json-server.typicode.com/leobianor/api-PreveniCare/pacientes', {
+            const pacienteData = {
+                id: uuidv4(), // Gerar um ID único usando uuidv4
                 nome,
                 sobrenome,
                 idade,
@@ -69,11 +66,18 @@ const PacienteForm = () => {
                 historicoMedico,
                 contatoEmergencia,
                 isIdoso,
-            });
+            };
 
-            console.log('Paciente salvo com sucesso:', response.data);
+            const storedPacientes = await AsyncStorage.getItem('pacientes');
+            const pacientesArray = storedPacientes ? JSON.parse(storedPacientes) : [];
+            pacientesArray.push(pacienteData);
+
+            await AsyncStorage.setItem('pacientes', JSON.stringify(pacientesArray));
+
+            console.log('Paciente salvo localmente com sucesso:', pacienteData);
 
             // Limpar os campos após salvar
+            setId('');
             setNome('');
             setSobrenome('');
             setIdade('');
@@ -86,44 +90,51 @@ const PacienteForm = () => {
             setHistoricoMedico('');
             setContatoEmergencia('');
             setIsIdoso(false);
+
+            // Chamar a função onSave passando os dados do paciente
+            onSave(pacientesArray);
         } catch (error) {
-            console.error('Erro ao salvar o paciente:', error.message);
+            console.error('Erro ao salvar o paciente localmente:', error.message);
         }
     };
 
     return (
-        <View>
-            <TextInput placeholder="Nome" value={nome} onChangeText={setNome} />
-            <TextInput placeholder="Sobrenome" value={sobrenome} onChangeText={setSobrenome} />
-            <TextInput placeholder="Idade" value={idade} onChangeText={setIdade} keyboardType="numeric" />
+        <View style={styles.containerPaciente}>
+            <TextInput style={styles.inputForm} placeholder="Nome" value={nome} onChangeText={setNome} />
+            <TextInput style={styles.inputForm} placeholder="Sobrenome" value={sobrenome} onChangeText={setSobrenome} />
+            <TextInput style={styles.inputForm} placeholder="Idade" value={idade} onChangeText={setIdade} keyboardType="numeric" />
 
             <TextInput
+                style={styles.inputForm}
                 placeholder="CPF"
                 value={cpf}
                 onChangeText={(text) => formatarCPF(text)}
                 keyboardType="numeric"
             />
-            <TextInput placeholder="Endereço" value={endereco} onChangeText={setEndereco} />
+            <TextInput style={styles.inputForm} placeholder="Endereço" value={endereco} onChangeText={setEndereco} />
 
             <TextInput
+                style={styles.inputForm}
                 placeholder="Telefone"
                 value={telefone}
                 onChangeText={(text) => formatarTelefone(text)}
                 keyboardType="phone-pad"
             />
 
-            <TextInput placeholder="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
-            <TextInput placeholder="Doenças Anteriores" value={doencasAnteriores} onChangeText={setDoencasAnteriores} />
-            <TextInput placeholder="Alergias" value={alergias} onChangeText={setAlergias} />
-            <TextInput placeholder="Histórico Médico" value={historicoMedico} onChangeText={setHistoricoMedico} />
-            <TextInput placeholder="Contato de Emergência" value={contatoEmergencia} onChangeText={setContatoEmergencia} />
+            <TextInput style={styles.inputForm} placeholder="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
+            <TextInput style={styles.inputForm} placeholder="Doenças Anteriores" value={doencasAnteriores} onChangeText={setDoencasAnteriores} />
+            <TextInput style={styles.inputForm} placeholder="Alergias" value={alergias} onChangeText={setAlergias} />
+            <TextInput style={styles.inputForm} placeholder="Histórico Médico" value={historicoMedico} onChangeText={setHistoricoMedico} />
+            <TextInput style={styles.inputForm} placeholder="Contato de Emergência" value={contatoEmergencia} onChangeText={setContatoEmergencia} />
 
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text>É idoso?</Text>
-                <Switch value={isIdoso} onValueChange={() => setIsIdoso(!isIdoso)} />
+                <Text style={[styles.inputForm, { color: '#bbb' }]}>É idoso?</Text>
+                <Switch style={{ marginLeft: 10 }} value={isIdoso} onValueChange={() => setIsIdoso(!isIdoso)} />
             </View>
 
-            <Button title="Salvar" onPress={handleSave} />
+            <TouchableOpacity style={styles.buttonForm} onPress={handleSave}>
+                <Text style={styles.textWite}>Salvar</Text>
+            </TouchableOpacity>
         </View>
     );
 };

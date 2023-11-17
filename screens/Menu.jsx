@@ -15,7 +15,7 @@ export default function Menu({ navigation }) {
                     <Text style={styles.text}>Olá,</Text>
                     <Text style={styles.title}>{username}</Text>
                 </View>
-                <Ionicons name="md-exit-outline" size={24} color="#fff" onPress={() => navigation.navigate('Home')}/>
+                <Ionicons name="md-exit-outline" size={24} color="#121A2C" onPress={() => navigation.navigate('Home')}/>
             </View>
 
             <View style={styles.container}>
