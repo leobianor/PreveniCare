@@ -1,3 +1,4 @@
+// CadastroMedicamentoScreen.js
 import React, { useState, useEffect } from 'react';
 import { View, Alert } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
@@ -5,8 +6,7 @@ import { styles } from '../style';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MedicamentoForm from '../components/MedicamentoForm';
 
-
-const CadastroMedicamentosScreen = ({ navigation }) => {
+const CadastroMedicamentoScreen = ({ navigation }) => {
     const [medicamentos, setMedicamentos] = useState([]);
     const [pacientes, setPacientes] = useState([]);
 
@@ -28,8 +28,13 @@ const CadastroMedicamentosScreen = ({ navigation }) => {
                 if (storedPacientes) {
                     setPacientes(JSON.parse(storedPacientes));
                 }
+
+                const storedMedicamentos = await AsyncStorage.getItem('medicamentos');
+                if (storedMedicamentos) {
+                    setMedicamentos(JSON.parse(storedMedicamentos));
+                }
             } catch (error) {
-                console.error('Erro ao buscar os pacientes:', error.message);
+                console.error('Erro ao buscar os dados:', error.message);
             }
         };
 
@@ -44,4 +49,4 @@ const CadastroMedicamentosScreen = ({ navigation }) => {
     );
 };
 
-export default CadastroMedicamentosScreen;
+export default CadastroMedicamentoScreen;

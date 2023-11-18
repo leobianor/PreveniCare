@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+// MedicamentoForm.js
+import React, { useState } from 'react';
 import { View, TextInput, Button, Text, TouchableOpacity, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -45,19 +46,17 @@ const MedicamentoForm = ({ onSave, pacientes }) => {
 
             const updatedPacientes = pacientes.map((paciente) => {
                 if (paciente.id === selectedPaciente) {
+                    const updatedMedicamentos = paciente.medicamentos ? [...paciente.medicamentos, novoMedicamento] : [novoMedicamento];
                     return {
                         ...paciente,
-                        medicamentos: [...(paciente.medicamentos || []), novoMedicamento],
+                        medicamentos: updatedMedicamentos,
                     };
                 }
                 return paciente;
             });
 
             await AsyncStorage.setItem('pacientes', JSON.stringify(updatedPacientes));
-            onSave(novoMedicamento);
-
-            const updatedMedicamentos = [...medicamentos, novoMedicamento];
-            await AsyncStorage.setItem('medicamentos', JSON.stringify(updatedMedicamentos));
+            onSave && onSave(novoMedicamento);
 
             setNomeMedicamento('');
             setDosagem('');
@@ -65,11 +64,11 @@ const MedicamentoForm = ({ onSave, pacientes }) => {
             setSelectedPaciente(null);
 
             Alert.alert('Sucesso', 'Medicamento cadastrado com sucesso!');
-            console.log('Medicamento cadastrado:', novoMedicamento);
         } catch (error) {
             console.error('Erro ao salvar o medicamento:', error.message);
         }
     };
+
     return (
         <View>
             <TextInput

@@ -1,28 +1,34 @@
 // AplicacaoList.js
-
 import React from 'react';
-import { View, Text, FlatList } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import { format } from 'date-fns';
+import { styles } from '../style';
 
-const AplicacaoList = ({ medicamentos, pacientes }) => {
+const AplicacaoList = ({ medicamentosAplicados, pacientes, onRemoverMedicacao }) => {
     return (
         <View>
             <Text>Lista de Medicamentos Aplicados:</Text>
             <FlatList
-                data={medicamentos}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item }) => (
-                    <View>
-                        <Text>{item.nome}</Text>
-                        <Text>Dosagem: {item.dosagem}</Text>
-                        <Text>Horário: {item.horario}</Text>
-                        {item.pacienteId && pacientes && pacientes.length > 0 && (
+                data={medicamentosAplicados}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item }) => {
+                    const paciente = pacientes.find((p) => p.id === item.pacienteId) || {};
+                    const formattedDate = format(new Date(item.horario), 'dd/MM/yyyy HH:mm');
+
+                    return (
+                        <View key={item.id}>
+                            <Text>{item.nome}</Text>
+                            <Text>Dosagem: {item.dosagem}</Text>
+                            <Text>Horário: {formattedDate}</Text>
                             <Text>
-                                Paciente: {pacientes.find((p) => p.id === item.pacienteId)?.nomeCompleto}
+                                Paciente: {paciente.nome} {paciente.sobrenome}
                             </Text>
-                        )}
-                        {/* Adicione outros detalhes necessários aqui */}
-                    </View>
-                )}
+                            <TouchableOpacity onPress={() => onRemoverMedicacao(item)}>
+                                <Text>Remover Medicamento</Text>
+                            </TouchableOpacity>
+                        </View>
+                    );
+                }}
             />
         </View>
     );

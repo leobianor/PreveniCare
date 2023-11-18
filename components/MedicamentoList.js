@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// MedicamentoList.js
+import React from 'react';
+import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { format } from 'date-fns';
+import { styles } from '../style';
 
-const MedicamentoList = ({ medicamentos, pacientes }) => {
+const MedicamentoList = ({ medicamentos, pacientes, onMedicamentoAplicado }) => {
     return (
         <View>
             <Text>Lista de Medicamentos:</Text>
@@ -15,13 +16,16 @@ const MedicamentoList = ({ medicamentos, pacientes }) => {
                     const formattedDate = format(new Date(item.horario), 'dd/MM/yyyy HH:mm');
 
                     return (
-                        <View>
+                        <View key={item.id}>
                             <Text>{item.nome}</Text>
                             <Text>Dosagem: {item.dosagem}</Text>
                             <Text>Horário: {formattedDate}</Text>
                             <Text>
-                                Paciente: {paciente.nome}{paciente.sobrenome}
+                                Paciente: {paciente.nome} {paciente.sobrenome}
                             </Text>
+                            <TouchableOpacity onPress={() => onMedicamentoAplicado(item)}>
+                                <Text>Marcar como aplicado</Text>
+                            </TouchableOpacity>
                         </View>
                     );
                 }}
