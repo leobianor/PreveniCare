@@ -34,8 +34,8 @@ export default function Login({ navigation }) {
                 value={senha}
                 onChangeText={setSenha}
             />
-            <TouchableOpacity onPress={handleLogin}>
-                <Text style={styles.button}>Login</Text>
+            <TouchableOpacity style={styles.buttonForm} onPress={handleLogin}>
+                <Text style={styles.textWite}>Login</Text>
             </TouchableOpacity>
 
             <Text style={styles.erro} >{erro}</Text>

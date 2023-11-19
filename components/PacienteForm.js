@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, TextInput, Switch, Text, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { v4 as uuidv4 } from 'uuid'; // Importar a função uuidv4
+import { v4 as uuidv4 } from 'uuid';
+import { Picker } from '@react-native-picker/picker'; // Importe Picker do novo pacote
 import { styles } from '../style';
 
 const PacienteForm = ({ onSave }) => {
@@ -17,7 +18,13 @@ const PacienteForm = ({ onSave }) => {
     const [alergias, setAlergias] = useState('');
     const [historicoMedico, setHistoricoMedico] = useState('');
     const [contatoEmergencia, setContatoEmergencia] = useState('');
-    const [isIdoso, setIsIdoso] = useState(false);
+    const [sexo, setSexo] = useState(''); // Adiciona o estado para o sexo
+    const [pickerVisible, setPickerVisible] = useState(false); // Novo estado para controlar a visibilidade do Picker
+
+    const togglePicker = () => {
+        setPickerVisible(!pickerVisible);
+    };
+
 
     const formatarCPF = (inputCPF) => {
         const cleaned = inputCPF.replace(/\D/g, '');
@@ -53,7 +60,7 @@ const PacienteForm = ({ onSave }) => {
 
         try {
             const pacienteData = {
-                id: uuidv4(), // Gerar um ID único usando uuidv4
+                id: uuidv4(),
                 nome,
                 sobrenome,
                 idade,
@@ -65,8 +72,9 @@ const PacienteForm = ({ onSave }) => {
                 alergias,
                 historicoMedico,
                 contatoEmergencia,
-                isIdoso,
-            };
+                isIdoso: idade >= 60, // Definir isIdoso com base na idade (true se idade >= 60, false caso contrário)
+                sexo, // Adicionar a informação de sexo
+            }
 
             const storedPacientes = await AsyncStorage.getItem('pacientes');
             const pacientesArray = storedPacientes ? JSON.parse(storedPacientes) : [];
@@ -89,7 +97,7 @@ const PacienteForm = ({ onSave }) => {
             setAlergias('');
             setHistoricoMedico('');
             setContatoEmergencia('');
-            setIsIdoso(false);
+            setIsIdoso(false); // Resetar isIdoso para false
 
             // Chamar a função onSave passando os dados do paciente
             onSave(pacientesArray);
@@ -111,6 +119,26 @@ const PacienteForm = ({ onSave }) => {
                 onChangeText={(text) => formatarCPF(text)}
                 keyboardType="numeric"
             />
+
+            <TouchableOpacity onPress={togglePicker}>
+                <Text style={[styles.inputForm, { color: sexo ? '#121212' : '#bbb' }]}>{sexo ? sexo : 'Selecionar Sexo'}</Text>
+            </TouchableOpacity>
+
+            {pickerVisible && (
+                <View style={styles.inputForm}>
+                    <Text >Sexo:</Text>
+                    <Picker
+                        selectedValue={sexo}
+                        onValueChange={(itemValue) => setSexo(itemValue)}
+                    >
+                        <Picker.Item label="Selecione o sexo" value="" />
+                        <Picker.Item label="Masculino" value="Masculino" />
+                        <Picker.Item label="Feminino" value="Feminino" />
+                    </Picker>
+                </View>
+            )}
+
+
             <TextInput style={styles.inputForm} placeholder="Endereço" value={endereco} onChangeText={setEndereco} />
 
             <TextInput
@@ -127,10 +155,8 @@ const PacienteForm = ({ onSave }) => {
             <TextInput style={styles.inputForm} placeholder="Histórico Médico" value={historicoMedico} onChangeText={setHistoricoMedico} />
             <TextInput style={styles.inputForm} placeholder="Contato de Emergência" value={contatoEmergencia} onChangeText={setContatoEmergencia} />
 
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={[styles.inputForm, { color: '#bbb' }]}>É idoso?</Text>
-                <Switch style={{ marginLeft: 10 }} value={isIdoso} onValueChange={() => setIsIdoso(!isIdoso)} />
-            </View>
+
+            
 
             <TouchableOpacity style={styles.buttonForm} onPress={handleSave}>
                 <Text style={styles.textWite}>Salvar</Text>

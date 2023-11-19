@@ -50,8 +50,9 @@ const ModalInfo = ({ visible, paciente, onClose, setPacientes }) => {
             <View style={[styles.container, styles.containerPaciente]}>
                 <Text style={styles.title}>Informações do Paciente:</Text>
                 <Text style={styles.nomePaciente}>Nome: {paciente.nome} {paciente.sobrenome}</Text>
-                <Text style={styles.nomePaciente}>CPF: {paciente.cpf}</Text>
                 <Text style={styles.nomePaciente}>Idade: {paciente.idade}</Text>
+                <Text style={styles.nomePaciente}>CPF: {paciente.cpf}</Text>
+                <Text style={styles.nomePaciente}>Sexo: {paciente.sexo}</Text>
                 <Text style={styles.nomePaciente}>Endereço: {paciente.endereco}</Text>
                 <Text style={styles.nomePaciente}>Telefone: {paciente.telefone}</Text>
                 <Text style={styles.nomePaciente}>Email: {paciente.email}</Text>

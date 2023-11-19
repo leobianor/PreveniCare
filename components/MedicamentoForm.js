@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, Text, TouchableOpacity, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import RNPickerSelect from 'react-native-picker-select';
 import { v4 as uuidv4 } from 'uuid';
 import { styles } from '../style';
+import { Picker } from '@react-native-picker/picker'; // Importe Picker do novo pacote
 
 const MedicamentoForm = ({ onSave, pacientes }) => {
     const [nomeMedicamento, setNomeMedicamento] = useState('');
@@ -13,6 +13,12 @@ const MedicamentoForm = ({ onSave, pacientes }) => {
     const [dataHorario, setDataHorario] = useState(new Date());
     const [selectedPaciente, setSelectedPaciente] = useState(null);
     const [showDatePicker, setShowDatePicker] = useState(false);
+    const [pickerVisible, setPickerVisible] = useState(false);
+
+
+    const togglePicker = () => {
+        setPickerVisible(!pickerVisible);
+    };
 
     const showDatePickerComponent = () => {
         setShowDatePicker(true);
@@ -73,13 +79,8 @@ const MedicamentoForm = ({ onSave, pacientes }) => {
         label: 'Selecione uma opção...',
         value: null,
         color: '#bbb',
-        fontsize:20,
-        
+        fontsize: 20,
     };
-
-    
-
-
 
     return (
         <View style={styles.containerPaciente}>
@@ -92,13 +93,12 @@ const MedicamentoForm = ({ onSave, pacientes }) => {
             <TextInput style={styles.inputForm} placeholder="Dosagem" value={dosagem} onChangeText={setDosagem} />
 
             <TouchableOpacity onPress={showDatePickerComponent}>
-                <Text style={styles.inputForm}>Escolher Data/Horário</Text>
+                <Text style={[styles.inputForm, { color: '#bbb' }]}>Escolher Data/Horário</Text>
             </TouchableOpacity>
 
             <View style={styles.DateTime}>
                 {showDatePicker && (
                     <DateTimePicker
-                        
                         testID="dateTimePicker"
                         value={dataHorario}
                         mode="datetime"
@@ -107,28 +107,32 @@ const MedicamentoForm = ({ onSave, pacientes }) => {
                         onChange={handleDateChange}
                     />
                 )}
-
             </View>
 
-
             <View>
-                <Text style={styles.inputForm}>Selecionar Paciente:</Text>
-                <RNPickerSelect
-                    placeholder={placeholder}
-                    onValueChange={(value) => setSelectedPaciente(value)}
-                    items={(pacientes && pacientes.length > 0) ? (
-                        pacientes.map((paciente) => ({
-                            label: `${paciente.nome} - ${paciente.cpf}`,
-                            value: paciente.id,
-                        }))
-                    ) : [{ label: 'Nenhum paciente disponível', value: null }]}
-                />
+                <TouchableOpacity onPress={togglePicker}>
+                    <Text style={[styles.inputForm, { color: '#bbb' }]}>Selecionar Paciente:</Text>
+                </TouchableOpacity>
+
+                {pickerVisible && (
+                    <Picker
+                        selectedValue={selectedPaciente}
+                        onValueChange={(value) => setSelectedPaciente(value)}
+                    >
+                        <Picker.Item label="Selecione uma opção..." value={null} color="#bbb" />
+                        {(pacientes && pacientes.length > 0) ? (
+                            pacientes.map((paciente) => (
+                                <Picker.Item key={paciente.id} label={`${paciente.nome} ${paciente.sobrenome} - ${paciente.cpf}`} value={paciente.id} />
+                            ))
+                        ) : <Picker.Item label="Nenhum paciente disponível" value={null} />}
+                    </Picker>
+                )}
+
             </View>
 
             <TouchableOpacity style={styles.buttonForm} onPress={handleSave}>
                 <Text style={styles.textWite}>Salvar</Text>
             </TouchableOpacity>
-
         </View>
     );
 };
