@@ -3,7 +3,7 @@ import { View, Text, Modal, Button, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../style';
 
-const ModalInfo = ({ visible, paciente, onClose }) => {
+const ModalInfo = ({ visible, paciente, onClose, setPacientes }) => {
     if (!paciente) {
         return null;
     }
@@ -30,6 +30,9 @@ const ModalInfo = ({ visible, paciente, onClose }) => {
                             );
 
                             await AsyncStorage.setItem('pacientes', JSON.stringify(novaListaPacientes));
+
+                            // Atualizar o estado com a nova lista de pacientes
+                            setPacientes(novaListaPacientes);
 
                             onClose();
                         } catch (error) {

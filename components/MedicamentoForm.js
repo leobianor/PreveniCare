@@ -69,33 +69,52 @@ const MedicamentoForm = ({ onSave, pacientes }) => {
         }
     };
 
+    const placeholder = {
+        label: 'Selecione uma opção...',
+        value: null,
+        color: '#bbb',
+        fontsize:20,
+        
+    };
+
+    
+
+
+
     return (
-        <View>
+        <View style={styles.containerPaciente}>
             <TextInput
+                style={styles.inputForm}
                 placeholder="Nome do Medicamento"
                 value={nomeMedicamento}
                 onChangeText={setNomeMedicamento}
             />
-            <TextInput placeholder="Dosagem" value={dosagem} onChangeText={setDosagem} />
+            <TextInput style={styles.inputForm} placeholder="Dosagem" value={dosagem} onChangeText={setDosagem} />
 
             <TouchableOpacity onPress={showDatePickerComponent}>
-                <Text>Escolher Data/Horário</Text>
+                <Text style={styles.inputForm}>Escolher Data/Horário</Text>
             </TouchableOpacity>
 
-            {showDatePicker && (
-                <DateTimePicker
-                    testID="dateTimePicker"
-                    value={dataHorario}
-                    mode="datetime"
-                    is24Hour={true}
-                    display="default"
-                    onChange={handleDateChange}
-                />
-            )}
+            <View style={styles.DateTime}>
+                {showDatePicker && (
+                    <DateTimePicker
+                        
+                        testID="dateTimePicker"
+                        value={dataHorario}
+                        mode="datetime"
+                        is24Hour={true}
+                        display="default"
+                        onChange={handleDateChange}
+                    />
+                )}
 
-            <View style={{ marginBottom: 20 }}>
-                <Text>Selecionar Paciente:</Text>
+            </View>
+
+
+            <View>
+                <Text style={styles.inputForm}>Selecionar Paciente:</Text>
                 <RNPickerSelect
+                    placeholder={placeholder}
                     onValueChange={(value) => setSelectedPaciente(value)}
                     items={(pacientes && pacientes.length > 0) ? (
                         pacientes.map((paciente) => ({
@@ -106,7 +125,10 @@ const MedicamentoForm = ({ onSave, pacientes }) => {
                 />
             </View>
 
-            <Button title="Salvar" onPress={handleSave} />
+            <TouchableOpacity style={styles.buttonForm} onPress={handleSave}>
+                <Text style={styles.textWite}>Salvar</Text>
+            </TouchableOpacity>
+
         </View>
     );
 };

@@ -1,10 +1,11 @@
 // CadastroMedicamentoScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, Alert } from 'react-native';
+import { View, Alert, Text } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { styles } from '../style';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MedicamentoForm from '../components/MedicamentoForm';
+
 
 const CadastroMedicamentoScreen = ({ navigation }) => {
     const [medicamentos, setMedicamentos] = useState([]);
@@ -44,6 +45,7 @@ const CadastroMedicamentoScreen = ({ navigation }) => {
     return (
         <View style={styles.containerPage}>
             <AntDesign name="arrowleft" size={24} color="#121A2C" onPress={() => navigation.navigate('Menu')}/>
+            <Text style={styles.titleScreen}>Cadastro Medicamento</Text>
             <MedicamentoForm onSave={handleSaveMedicamento} pacientes={pacientes} />
         </View>
     );
