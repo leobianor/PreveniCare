@@ -22,6 +22,8 @@
         "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#F5F5F5"
       }
+
+
     },
     "web": {
       "favicon": "./assets/logo.png"

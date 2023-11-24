@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Switch, Text, TouchableOpacity } from 'react-native';
+import { View, TextInput, Text, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { v4 as uuidv4 } from 'uuid';
 import { Picker } from '@react-native-picker/picker'; // Importe Picker do novo pacote
@@ -97,7 +97,7 @@ const PacienteForm = ({ onSave }) => {
             setAlergias('');
             setHistoricoMedico('');
             setContatoEmergencia('');
-            setIsIdoso(false); // Resetar isIdoso para false
+            setSexo('');
 
             // Chamar a função onSave passando os dados do paciente
             onSave(pacientesArray);

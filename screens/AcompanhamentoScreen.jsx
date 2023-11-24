@@ -1,5 +1,3 @@
-// AcompanhamentoScreen.js
-
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
@@ -78,7 +76,10 @@ const AcompanhamentoScreen = ({ navigation }) => {
     };
 
     const renderItem = ({ item }) => {
-        if (mostrarApenasIdosos && !getPacienteNome(item.pacienteId).isIdoso) {
+        const pacienteNome = getPacienteNome(item.pacienteId);
+        const idadeDoPaciente = pacientes.find((p) => p.id === item.pacienteId)?.idade || 0;
+
+        if (mostrarApenasIdosos && idadeDoPaciente < 60) {
             return null;
         }
 
@@ -88,7 +89,7 @@ const AcompanhamentoScreen = ({ navigation }) => {
                 <Text style={styles.textMedicamento}>Dosagem: {`${item.dosagem}`}</Text>
                 <Text style={styles.textMedicamento}>Data/Horário: {formatDate(item.horario)}</Text>
                 <TouchableOpacity onPress={() => abrirModalInfoPaciente(item.pacienteId)}>
-                    <Text style={styles.textMedicamento}>Nome do Paciente: {getPacienteNome(item.pacienteId)}</Text>
+                    <Text style={styles.textMedicamento}>Nome do Paciente: {pacienteNome}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.buttonAplicar} onPress={() => handleMedicamentoAplicado(item)}>
                     <Text style={[styles.textMedicamento, { textAlign: 'center', color: '#fff' }]}>Medicação Aplicada</Text>
@@ -98,7 +99,10 @@ const AcompanhamentoScreen = ({ navigation }) => {
     };
 
     const renderMedicamentoAplicadoItem = ({ item }) => {
-        if (mostrarApenasIdosos && !getPacienteNome(item.pacienteId).isIdoso) {
+        const pacienteNome = getPacienteNome(item.pacienteId);
+        const idadeDoPaciente = pacientes.find((p) => p.id === item.pacienteId)?.idade || 0;
+
+        if (mostrarApenasIdosos && idadeDoPaciente < 60) {
             return null;
         }
 
@@ -108,7 +112,7 @@ const AcompanhamentoScreen = ({ navigation }) => {
                 <Text style={styles.textMedicamento}>Dosagem: {`${item.dosagem}`}</Text>
                 <Text style={styles.textMedicamento}>Data/Horário: {formatDate(item.horario)}</Text>
                 <TouchableOpacity onPress={() => abrirModalInfoPaciente(item.pacienteId)}>
-                    <Text style={styles.textMedicamento}>Nome do Paciente: {getPacienteNome(item.pacienteId)}</Text>
+                    <Text style={styles.textMedicamento}>Nome do Paciente: {pacienteNome}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.buttonRemover} onPress={() => handleRemoverMedicamentoAplicado(item)}>
                     <Text style={[styles.textMedicamento, { textAlign: 'center', color: '#fff' }]}>Remover</Text>
